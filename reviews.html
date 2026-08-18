@@ -20,19 +20,23 @@
     </aside>
 
     <main class="main-content">
-        <h1>Client Testimonials</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Client Testimonials</h1>
+            <button id="adminBtn" style="background: transparent; border: 1px solid var(--text-muted); color: var(--text-muted); padding: 5px 10px; font-size: 0.8rem;">Admin Mode</button>
+        </div>
+        
         <p>Leave a review about your experience with Tejada Construction LLC.</p>
 
         <!-- Review Submission Form -->
         <form id="reviewForm" style="margin-bottom: 2rem;">
-            <label for="review_text" style="color: var(--secondary-gold);">Write a Review</label>
-            <textarea id="review_text" name="review_text" rows="4" placeholder="Share your experience..." required></textarea>
+            <label for="review_text" style="color: var(--secondary-gold);">Write a Review (Max 500 characters)</label>
+            <textarea id="review_text" name="review_text" rows="4" maxlength="500" placeholder="Share your experience..." required></textarea>
             <button type="submit">Submit Review</button>
         </form>
 
         <h2>Recent Reviews</h2>
         <div id="reviewsContainer" class="reviews-container">
-            <!-- Reviews will load dynamically here -->
+            <!-- Reviews dynamically render here -->
         </div>
 
         <footer style="margin-top: 3rem;">
@@ -44,54 +48,111 @@
         document.addEventListener('DOMContentLoaded', () => {
             const reviewForm = document.getElementById('reviewForm');
             const reviewsContainer = document.getElementById('reviewsContainer');
+            const adminBtn = document.getElementById('adminBtn');
+            
+            // Secret key to enable delete buttons (Change 'admin123' to whatever password you want)
+            const ADMIN_PASS = 'shokubai';
+            let isAdmin = false;
 
-            // Load and display saved reviews from localStorage
+            // 1. Safe rendering engine using textContent (Prevents XSS/Script Injection)
             function loadReviews() {
                 const reviews = JSON.parse(localStorage.getItem('tc_reviews') || '[]');
+                reviewsContainer.innerHTML = '';
+
                 if (reviews.length === 0) {
                     reviewsContainer.innerHTML = '<p style="color: var(--text-muted);">No reviews yet. Be the first to leave one!</p>';
                     return;
                 }
 
-                reviewsContainer.innerHTML = reviews.map(r => `
-                    <div class="card" style="margin-bottom: 1rem;">
-                        <p style="margin-bottom: 0.5rem; color: var(--text-light);">"${escapeHtml(r.text)}"</p>
-                        <small style="color: var(--secondary-gold);">— Submitted on ${r.date}</small>
-                    </div>
-                `).join('');
+                reviews.forEach((r, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.style.marginBottom = '1rem';
+                    card.style.position = 'relative';
+
+                    const p = document.createElement('p');
+                    p.style.marginBottom = '0.5rem';
+                    p.style.color = 'var(--text-light)';
+                    // textContent forces raw text rendering, neutralizing any HTML/JS tags
+                    p.textContent = `"${r.text}"`;
+
+                    const small = document.createElement('small');
+                    small.style.color = 'var(--secondary-gold)';
+                    small.textContent = `— Submitted on ${r.date}`;
+
+                    card.appendChild(p);
+                    card.appendChild(small);
+
+                    // Add Delete button if Admin Mode is active
+                    if (isAdmin) {
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.textContent = '✕ Delete';
+                        deleteBtn.style.cssText = 'position: absolute; top: 10px; right: 10px; background: #a83232; padding: 4px 8px; font-size: 0.75rem;';
+                        deleteBtn.onclick = () => deleteReview(index);
+                        card.appendChild(deleteBtn);
+                    }
+
+                    reviewsContainer.appendChild(card);
+                });
             }
 
-            // Prevent XSS attacks when rendering free text
-            function escapeHtml(str) {
-                return str.replace(/&/g, "&amp;")
-                          .replace(/</g, "&lt;")
-                          .replace(/>/g, "&gt;")
-                          .replace(/"/g, "&quot;")
-                          .replace(/'/g, "&#039;");
+            // 2. Delete single review
+            function deleteReview(index) {
+                const reviews = JSON.parse(localStorage.getItem('tc_reviews') || '[]');
+                reviews.splice(index, 1);
+                localStorage.setItem('tc_reviews', JSON.stringify(reviews));
+                loadReviews();
             }
 
-            // Capture free text submission and write to localStorage
+            // 3. Admin toggle listener
+            adminBtn.addEventListener('click', () => {
+                if (isAdmin) {
+                    isAdmin = false;
+                    adminBtn.textContent = 'Admin Mode';
+                    adminBtn.style.borderColor = 'var(--text-muted)';
+                } else {
+                    const pass = prompt('Enter Admin Passcode:');
+                    if (pass === ADMIN_PASS) {
+                        isAdmin = true;
+                        adminBtn.textContent = 'Exit Admin Mode';
+                        adminBtn.style.borderColor = 'var(--secondary-gold)';
+                    } else if (pass !== null) {
+                        alert('Incorrect passcode!');
+                    }
+                }
+                loadReviews();
+            });
+
+            // 4. Submission Handler with Rate Limiting
             reviewForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const textarea = document.getElementById('review_text');
                 const reviewText = textarea.value.trim();
 
+                // Rate limiting check (Prevent submitting more than once every 10 seconds)
+                const lastSubmit = localStorage.getItem('tc_last_submit');
+                const now = Date.now();
+                if (lastSubmit && (now - parseInt(lastSubmit)) < 10000) {
+                    alert('Please wait a few seconds before submitting another review.');
+                    return;
+                }
+
                 if (!reviewText) return;
 
                 const reviews = JSON.parse(localStorage.getItem('tc_reviews') || '[]');
-                const newReview = {
+                reviews.unshift({
                     text: reviewText,
                     date: new Date().toLocaleString()
-                };
+                });
 
-                reviews.unshift(newReview); // Add new review at the top
                 localStorage.setItem('tc_reviews', JSON.stringify(reviews));
+                localStorage.setItem('tc_last_submit', now.toString());
 
                 textarea.value = '';
                 loadReviews();
             });
 
-            // Initial load of reviews
+            // Initial load
             loadReviews();
         });
     </script>
