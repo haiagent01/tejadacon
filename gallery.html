@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tejada Construction LLC | Project Gallery</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="brand-title">Tejada Const.</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="services.html">Services</a>
+            <a href="about.html">About Us</a>
+            <a href="gallery.html" class="active">Gallery</a>
+            <a href="reviews.html">Reviews</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <h1>Completed Projects</h1>
+        <p>Explore our portfolio of exterior masonry, custom decking, retaining walls, and craftsmanship across Annapolis and the DMV region.</p>
+
+        <div class="gallery-grid" id="gallery-grid">
+            <!-- Sample Project Cards (Replace src with actual image paths) -->
+            <div class="gallery-card">
+                <img src="projects/deck-1.jpg" alt="Custom Deck Installation">
+                <div class="gallery-caption">Custom TimberTech Deck — Annapolis, MD</div>
+            </div>
+
+            <div class="gallery-card">
+                <img src="projects/retaining-wall-1.jpg" alt="Stone Retaining Wall">
+                <div class="gallery-caption">Precision Masonry & Retaining Wall</div>
+            </div>
+
+            <div class="gallery-card">
+                <img src="projects/patio-1.jpg" alt="Patio and Walkway">
+                <div class="gallery-caption">Pool Patio & Walkway</div>
+            </div>
+
+            <div class="gallery-card">
+                <img src="projects/carport-1.jpg" alt="Car Port">
+                <div class="gallery-caption">Car Port Covering</div>
+            </div>
+
+            <div class="gallery-card">
+                <img src="projects/carport-2.jpg" alt="Car Port">
+                <div class="gallery-caption">Car Port Covering</div>
+            </div>
+
+            <div class="gallery-card">
+                <img src="projects/concrete-driveway.jpg" alt="Stamped Concrete Driveway">
+                <div class="gallery-caption">Stamped Concrete Driveway</div>
+            </div>
+        </div>
+
+        <footer>
+            Site design by Harrison AI Agents.
+        </footer>
+    </main>
+
+    <!-- Script to check raw image dimensions and apply portrait/landscape classes -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const galleryImages = document.querySelectorAll('.gallery-card img');
+
+            galleryImages.forEach(img => {
+                const evaluateAspect = () => {
+                    const card = img.closest('.gallery-card');
+                    if (!card) return;
+
+                    // Calculate aspect ratio (Width / Height)
+                    const ratio = img.naturalWidth / img.naturalHeight;
+
+                    if (ratio >= 1.25) {
+                        card.classList.add('landscape');
+                    } else if (ratio <= 0.85) {
+                        card.classList.add('portrait');
+                    }
+                };
+
+                // Run evaluation immediately if cached or wait for load event
+                if (img.complete && img.naturalWidth !== 0) {
+                    evaluateAspect();
+                } else {
+                    img.addEventListener('load', evaluateAspect);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
