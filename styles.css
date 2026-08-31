@@ -364,4 +364,106 @@ footer {
         grid-row: span 1;
     }
 }
+/* Thumbnail Grid Layout */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 380px));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.gallery-card {
+    background: var(--bg-card);
+    border: 1px solid var(--primary-blue);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.gallery-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--secondary-gold);
+}
+
+/* Enforces uniform thumbnail aspect ratio without distorting images */
+.thumb-container {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--bg-dark);
+}
+
+.thumb-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crops neatly to fit 4:3 without stretching */
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.gallery-card:hover .thumb-container img {
+    transform: scale(1.05);
+}
+
+.gallery-caption {
+    padding: 0.75rem 1rem;
+    color: var(--secondary-gold);
+    font-size: 0.9rem;
+    background: var(--bg-card);
+    border-top: 1px solid var(--primary-blue);
+}
+
+/* Lightbox Modal Overlay */
+.lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background-color: rgba(10, 14, 18, 0.92);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lightbox.active {
+    display: flex;
+    opacity: 1;
+}
+
+.lightbox-content {
+    max-width: 90vw;
+    max-height: 80vh;
+    border-radius: 8px;
+    border: 2px solid var(--secondary-gold);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    object-fit: contain; /* Displays uncropped full-size image in original proportions */
+}
+
+.lightbox-caption {
+    margin-top: 1rem;
+    color: var(--text-light);
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    color: var(--secondary-gold);
+    font-size: 2.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    line-height: 1;
+}
+
+.lightbox-close:hover {
+    color: var(--secondary-green);
 }
