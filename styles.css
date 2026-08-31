@@ -247,6 +247,77 @@ footer {
     position: relative;
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
+    /* Gallery Layout & Auto-Resizing Image Controls */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-auto-rows: 240px;
+    grid-auto-flow: dense;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 100%;
+}
+
+.gallery-card {
+    background: var(--bg-card);
+    border: 1px solid var(--primary-blue);
+    border-radius: 8px;
+    overflow: hidden; /* Prevents oversized images from breaking layout */
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Aspect ratio spans for desktop views */
+.gallery-card.landscape {
+    grid-column: span 2;
+}
+
+.gallery-card.portrait {
+    grid-row: span 2;
+}
+
+/* Fluid responsive image scaling */
+.gallery-card img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover; /* Maintains aspect ratio while filling container */
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.gallery-card:hover img {
+    transform: scale(1.03);
+}
+
+.gallery-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(18, 24, 31, 0.9);
+    padding: 0.75rem 1rem;
+    color: var(--secondary-gold);
+    font-size: 0.9rem;
+    border-top: 1px solid var(--primary-blue);
+    z-index: 2;
+}
+
+/* Responsive query: collapses multi-column spans on small screens to avoid overflow */
+@media screen and (max-width: 640px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        grid-auto-rows: 220px;
+    }
+    .gallery-card.landscape,
+    .gallery-card.portrait {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+}
 
 /* Dynamic ratio spanning for grid balance */
 .gallery-card.landscape {
