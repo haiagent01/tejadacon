@@ -23,43 +23,48 @@
     <main class="main-content">
         <h1>Completed Projects | Exterior</h1>
         <p>Explore our portfolio of exterior masonry, custom decking, retaining walls, and craftsmanship across Annapolis and the DMV region.</p>
+        <p>Click any thumbnail to view the full-size project photo.</p>
 
-        <div class="gallery-grid" id="gallery-grid" style="width: 100%; max-width: 100%; overflow: hidden;">
-            
-            <!-- Project Card -->
+       <div class="gallery-grid">
+            <!-- Thumbnail Card -->
             <div class="gallery-card">
-                <div class="img-wrapper" style="width: 100%; height: 100%; overflow: hidden;">
-                    <img src="projects/rear-deck-1.jpg" alt="Custom Deck Installation" style="width: 100%; height: 100%; object-fit: cover; max-width: 100%;">
+                <div class="thumb-container">
+                    <img src="projects/rear-deck-1.jpg" alt="Custom Deck Installation">
                 </div>
                 <div class="gallery-caption">Custom TimberTech Deck — Annapolis, MD</div>
             </div>
 
             <div class="gallery-card">
-                <div class="img-wrapper" style="width: 100%; height: 100%; overflow: hidden;">
+                <div class="thumb-container">
                     <img src="projects/retaining-wall-1.jpg" alt="Stone Retaining Wall">
                 </div>
                 <div class="gallery-caption">Precision Masonry & Retaining Wall</div>
             </div>
 
             <div class="gallery-card">
-                <div class="img-wrapper" style="width: 100%; height: 100%; overflow: hidden;">
+               <div class="thumb-container">
                     <img src="projects/patio-1.jpg" alt="Patio and Walkway">
                 </div>
                 <div class="gallery-caption">Pool Patio & Walkway</div>
             </div>
 
             <div class="gallery-card">
-                <img src="projects/carport-1.jpg" alt="Car Port">
+                <div class="thumb-container">
+                    <img src="projects/carport-1.jpg" alt="Car Port">
+                </div>
                 <div class="gallery-caption">Car Port Covering</div>
             </div>
 
             <div class="gallery-card">
-                <img src="projects/carport-2.jpg" alt="Car Port">
+                <div class="thumb-container">
+                    <img src="projects/carport-2.jpg" alt="Car Port">
                 <div class="gallery-caption">Car Port Covering</div>
             </div>
 
             <div class="gallery-card">
-                <img src="projects/concrete-driveway.jpg" alt="Stamped Concrete Driveway">
+                <div class="thumb-container">
+                    <img src="projects/concrete-driveway.jpg" alt="Stamped Concrete Driveway">
+                </div>
                 <div class="gallery-caption">Rear Wood Deck and Stairs</div>
             </div>
         </div>
@@ -68,34 +73,45 @@
         <p>Explore our portfolio of interior remodeling, construction, and craftsmanship across Annapolis and the DMV region.</p>
 
         <div class="gallery-grid" id="gallery-grid">
-            <!-- Sample Project Cards (Replace src with actual image paths) -->
             <div class="gallery-card">
-                <img src="projects/kitchen-1.jpg" alt="Custom Deck Installation">
+                <div class="thumb-container">
+                    <img src="projects/kitchen-1.jpg" alt="Custom Deck Installation">
+                </div>
                 <div class="gallery-caption">Custom Kitchen Design — Annapolis, MD</div>
             </div>
 
             <div class="gallery-card">
-                <img src="projects/kitchen-2.jpg" alt="Custom Deck Installation">
+                <div class="thumb-container">
+                    <img src="projects/kitchen-2.jpg" alt="Custom Deck Installation">
+                </div>
                 <div class="gallery-caption">Custom Kitchen Design — Annapolis, MD</div>
             </div>
 
             <div class="gallery-card">
-                <img src="projects/kitchen-3.jpg" alt="Custom Deck Installation">
+                <div class="thumb-container">
+                    <img src="projects/kitchen-3.jpg" alt="Custom Deck Installation">
+                </div>
                 <div class="gallery-caption">Custom Kitchen Design — Annapolis, MD</div>
             </div>
 
             <div class="gallery-card">
-                <img src="projects/kitchen-4.jpg" alt="Custom Deck Installation">
+                <div class="thumb-container">
+                    <img src="projects/kitchen-4.jpg" alt="Custom Deck Installation">
+                </div>
                 <div class="gallery-caption">Custom Kitchen Design — Annapolis, MD</div>
             </div>
 
             <div class="gallery-card">
-                <img src="projects/kitchen-5.jpg" alt="Custom Deck Installation">
+                <div class="thumb-container">
+                    <img src="projects/kitchen-5.jpg" alt="Custom Deck Installation">
+                </div>
                 <div class="gallery-caption">Custom Kitchen Design — Annapolis, MD</div>
             </div>
 
             <div class="gallery-card">
-                <img src="projects/kitchen-6.jpg" alt="Custom Deck Installation">
+                <div class="thumb-container">
+                    <img src="projects/kitchen-6.jpg" alt="Custom Deck Installation">
+                </div>
                 <div class="gallery-caption">Custom Kitchen Design — Annapolis, MD</div>
             </div>
 
@@ -108,34 +124,58 @@
         </footer>
     </main>
 
-    <!-- Script to check raw image dimensions and apply portrait/landscape classes -->
+    <!-- In-Page Lightbox Modal -->
+    <div id="lightbox" class="lightbox" aria-hidden="true">
+        <span class="lightbox-close" id="lightboxClose">&times;</span>
+        <img class="lightbox-content" id="lightboxImg" src="" alt="Enlarged project view">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const galleryImages = document.querySelectorAll('.gallery-card img');
+            const cards = document.querySelectorAll('.gallery-card');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+            const lightboxCaption = document.getElementById('lightboxCaption');
+            const lightboxClose = document.getElementById('lightboxClose');
 
-            galleryImages.forEach(img => {
-                const evaluateAspect = () => {
-                    const card = img.closest('.gallery-card');
-                    if (!card) return;
+            // Open Lightbox on thumbnail click
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const img = card.querySelector('img');
+                    const caption = card.querySelector('.gallery-caption');
 
-                    // Calculate aspect ratio (Width / Height)
-                    const ratio = img.naturalWidth / img.naturalHeight;
-
-                    if (ratio >= 1.25) {
-                        card.classList.add('landscape');
-                    } else if (ratio <= 0.85) {
-                        card.classList.add('portrait');
+                    if (img) {
+                        lightboxImg.src = img.src;
+                        lightboxCaption.textContent = caption ? caption.textContent : '';
+                        lightbox.classList.add('active');
+                        lightbox.setAttribute('aria-hidden', 'false');
                     }
-                };
+                });
+            });
 
-                // Run evaluation immediately if cached or wait for load event
-                if (img.complete && img.naturalWidth !== 0) {
-                    evaluateAspect();
-                } else {
-                    img.addEventListener('load', evaluateAspect);
+            // Close functions
+            const closeLightbox = () => {
+                lightbox.classList.remove('active');
+                lightbox.setAttribute('aria-hidden', 'true');
+            };
+
+            lightboxClose.addEventListener('click', closeLightbox);
+
+            // Close when clicking outside the image or pressing Escape
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    closeLightbox();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                    closeLightbox();
                 }
             });
         });
     </script>
+
 </body>
 </html>
